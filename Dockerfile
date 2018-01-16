@@ -1,4 +1,4 @@
-FROM resin/%%RESIN_MACHINE_NAME%%-golang:slim
+FROM resin/raspberry-pi2-golang
 
 ENV INITSYSTEM on
 
