@@ -13,10 +13,10 @@ import (
 	"github.com/dillonhafer/garage-server/door"
 )
 
-// Static Version
+//Version ...
 const Version = "0.1.0"
 
-// Commandline Options
+//Options ...
 type Options struct {
 	pin          string
 	relayPin     int
@@ -96,11 +96,14 @@ func main() {
 
 	info := accessory.Info{
 		Name:         "Garage Door",
-		Manufacturer: "Dillon Hafer",
+		Manufacturer: "Rusty Cog",
 		Model:        "Raspberry Pi",
 		SerialNumber: serialNumber,
 	}
 
+	log.Println("relayPin: 7")
+	log.Println("StatusPin: 25")
+	log.Println("Sleep: 25")
 	acc := NewGarageDoorOpener(info)
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
 
