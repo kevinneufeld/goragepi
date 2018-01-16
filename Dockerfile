@@ -10,9 +10,9 @@ WORKDIR /go/src/github.com/kevinneufeld/GOragePi
 
 COPY . .
 
-# RUN go get -d -v ./...
+RUN go get -d -v ./...
 # RUN go install -v ./...
 
-# RUN go get GOragePi && go build
+RUN go build
 
 CMD ./GOragePi -pin $pin
