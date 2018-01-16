@@ -6,10 +6,10 @@ ENV INITSYSTEM on
 # 	build-essential \
 # 	&& apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /go/src/github.com/resin-io-projects/resin-go-hello-world
+WORKDIR /go/src/github.com/GOragePi
 
 COPY . ./
 
 RUN go build
 
-CMD ./resin-go-hello-world
+CMD ./GOragePi -pin $pin
