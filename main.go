@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"GOragePi/garage"
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hc/characteristic"
 	"github.com/brutella/log"
+	"github.com/dillonhafer/garage-server/door"
 )
 
 const Version = "0.1.0"
@@ -22,6 +22,8 @@ type Options struct {
 	sleepTimeout int
 	version      bool
 }
+
+var options Options
 
 var serialNumber = os.Getenv("RESIN_DEVICE_UUID")
 
@@ -92,7 +94,7 @@ func main() {
 
 	info := accessory.Info{
 		Name:         "Garage Door",
-		Manufacturer: "RustyCog",
+		Manufacturer: "Dillon Hafer",
 		Model:        "Raspberry Pi",
 		SerialNumber: serialNumber,
 	}
@@ -106,6 +108,10 @@ func main() {
 	}
 
 	go pollDoorStatus(acc, options.statusPin)
-	hc.OnTermination(t.Stop)
+
+	hc.OnTermination(func() {
+		<-t.Stop()
+	})
+
 	t.Start()
 }

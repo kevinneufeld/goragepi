@@ -6,7 +6,7 @@ ENV INITSYSTEM on
 # 	build-essential \
 # 	&& apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /go/src/github.com/GOragePi
+WORKDIR /go/src/github.com/kevinneufeld/GOragePi
 
 COPY . ./
 
