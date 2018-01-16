@@ -8,11 +8,11 @@ ENV INITSYSTEM on
 
 WORKDIR /go/src/github.com/kevinneufeld/GOragePi
 
-COPY . .
+COPY ./GOragePi ./app
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+# RUN go get -d -v ./...
+# RUN go install -v ./...
 
-RUN go get GOragePi && go build
+# RUN go get GOragePi && go build
 
-CMD ./GOragePi -pin $pin
+CMD ./app/GOragePi -pin $pin
