@@ -13,8 +13,10 @@ import (
 	"github.com/dillonhafer/garage-server/door"
 )
 
+// Static Version
 const Version = "0.1.0"
 
+// Commandline Options
 type Options struct {
 	pin          string
 	relayPin     int
