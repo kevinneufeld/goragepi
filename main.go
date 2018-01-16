@@ -70,8 +70,8 @@ func main() {
 	}
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
-	flag.IntVar(&options.relayPin, "relay-pin", 11, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 7, "GPIO pin of reed switch")
+	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
+	flag.IntVar(&options.statusPin, "status-pin", 4, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
@@ -101,9 +101,9 @@ func main() {
 		SerialNumber: serialNumber,
 	}
 
-	log.Println("relayPin: 7")
-	log.Println("StatusPin: 25")
-	log.Println("Sleep: 25")
+	log.Printf("INFO relayPin: %v", options.relayPin)
+	log.Printf("INFO StatusPin: %v", options.statusPin)
+	log.Printf("INFO StatusSleepInterval: %v", options.sleepTimeout)
 	acc := NewGarageDoorOpener(info)
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
 
