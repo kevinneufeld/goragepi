@@ -102,9 +102,9 @@ func main() {
 		SerialNumber: serialNumber,
 	}
 
-	fmt.Printf("relayPin: %v", options.relayPin)
-	fmt.Printf("StatusPin: %v", options.statusPin)
-	fmt.Printf("StatusSleepInterval: %v", options.sleepTimeout)
+	fmt.Printf("relayPin: %v \n", options.relayPin)
+	fmt.Printf("StatusPin: %v \n", options.statusPin)
+	fmt.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
 
 	acc := NewGarageDoorOpener(info)
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
