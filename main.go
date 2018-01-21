@@ -10,7 +10,7 @@ import (
 	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hc/characteristic"
 	"github.com/brutella/log"
-	"github.com/dillonhafer/garage-server/door"
+	"github.com/kevinneufeld/goragepi/door"
 )
 
 //Version ...
@@ -91,6 +91,7 @@ func main() {
 		os.Exit(0)
 	}
 
+	//brutella Log
 	log.Verbose = true
 	log.Info = true
 
@@ -101,9 +102,10 @@ func main() {
 		SerialNumber: serialNumber,
 	}
 
-	log.Printf("INFO relayPin: %v", options.relayPin)
-	log.Printf("INFO StatusPin: %v", options.statusPin)
-	log.Printf("INFO StatusSleepInterval: %v", options.sleepTimeout)
+	fmt.Printf("relayPin: %v", options.relayPin)
+	fmt.Printf("StatusPin: %v", options.statusPin)
+	fmt.Printf("StatusSleepInterval: %v", options.sleepTimeout)
+
 	acc := NewGarageDoorOpener(info)
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
 
