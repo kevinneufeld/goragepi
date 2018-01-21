@@ -6,6 +6,7 @@ Refactored for use with resin.io docker containers.
 
 Hardware I used for project:
 
+
 1. [Magnetic Reed Switch](http://amzn.to/1XuUrV9) (Optional. Used for door status)
 2. [Relay Shield Module](http://amzn.to/1NRZf1R)
 
