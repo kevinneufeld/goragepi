@@ -57,7 +57,8 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 			case "closed":
 				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
 			}
-			fmt.Printf("pollDoorStatus: %s", acc.GarageDoorOpener.CurrentDoorState.GetValue())
+			fmt.Printf("AccessoryCurrentState: %v\n", acc.GarageDoorOpener.CurrentDoorState.GetValue())
+			fmt.Printf("GPIODoorState: %s\n", status)
 		}
 		
 		time.Sleep(time.Second)
