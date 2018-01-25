@@ -8,7 +8,6 @@ import (
 func CheckDoorStatus(pinNumber int) (state string, err error) {
 	err = rpio.Open()
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	defer rpio.Close()
