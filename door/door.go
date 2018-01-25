@@ -1,14 +1,16 @@
 package door
 
 import (
+	"fmt"
 	"time"
-
 	"github.com/stianeikeland/go-rpio"
 )
 
 func CheckDoorStatus(pinNumber int) (state string, err error) {
+	fmt.Println("CheckDoorStatus: Start")
 	err = rpio.Open()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	defer rpio.Close()
@@ -19,7 +21,7 @@ func CheckDoorStatus(pinNumber int) (state string, err error) {
 	if pin.Read() == 0 {
 		status = "closed"
 	}
-
+	fmt.Println("CheckDoorStatus: %s", status)
 	return status, err
 }
 
