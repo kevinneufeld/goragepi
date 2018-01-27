@@ -83,7 +83,7 @@ func main() {
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
 	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 4, "GPIO pin of reed switch")
+	flag.IntVar(&options.statusPin, "status-pin", 5, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
