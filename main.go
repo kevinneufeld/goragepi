@@ -62,9 +62,9 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 
             if lastKnownState != status {
                 if lastKnownState == "" {
-                    log.Info.Printf("pollDoorStatusChange Initial State: %s", status)
+                    log.Info.Printf("InitSenorState: %s", status)
                 }else {
-                    log.Info.Printf("pollDoorStatusChange From: %s To: %s", lastKnownState, status)
+                    log.Info.Printf("DoorSensor: %s -> %s", lastKnownState, status)
                 }
 
                 lastKnownState = status
@@ -113,7 +113,8 @@ func main() {
     log.Info.Printf("relayPin: %v \n", options.relayPin)
     log.Info.Printf("StatusPin: %v \n", options.statusPin)
     log.Info.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
-
+    log.Info.Fatalln("This is a fatal error")
+    log.Info.Panicln("a string of panicking")
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
