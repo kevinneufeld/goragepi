@@ -41,6 +41,7 @@ func toggleDoor(o Options) func(int) {
             fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			if currentDoorState != nextState {
+			    log.Info.Println("Toggling Relay Switch")
 				door.ToggleSwitch(o.relayPin, o.sleepTimeout)
 			}
 		}
@@ -55,9 +56,11 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 		} else {
 			switch status {
 			case "open":
-				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
+				//acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
+				acc.GarageDoorOpener.CurrentDoorState.UpdateValue(characteristic.CurrentDoorStateOpen)
 			case "closed":
-				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
+				//acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
+                acc.GarageDoorOpener.CurrentDoorState.UpdateValue(characteristic.CurrentDoorStateClosed)
 			}
 
             if lastKnownState != status {
