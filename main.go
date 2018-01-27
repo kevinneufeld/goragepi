@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/brutella/hc"
+	hc "github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hc/characteristic"
-	"github.com/brutella/log"
+	"github.com/brutella/hc/log"
 	"github.com/kevinneufeld/goragepi/door"
 )
 
@@ -27,7 +27,7 @@ type Options struct {
 
 var options Options
 
-var serialNumber = os.Getenv("RESIN_DEVICE_UUID")
+var serialNumber string = os.Getenv("RESIN_DEVICE_UUID")
 
 func toggleDoor(o Options) func(int) {
 	return func(targetState int) {
@@ -73,7 +73,7 @@ func main() {
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
 	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 4, "GPIO pin of reed switch")
+	flag.IntVar(&options.statusPin, "status-pin", 21, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
@@ -93,10 +93,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	//brutella Log
-	log.Verbose = true
-	log.Info = true
-
 	info := accessory.Info{
 		Name:         "Garage Door",
 		Manufacturer: "Rusty Cog",
@@ -104,16 +100,18 @@ func main() {
 		SerialNumber: serialNumber,
 	}
 
-	fmt.Printf("relayPin: %v \n", options.relayPin)
-	fmt.Printf("StatusPin: %v \n", options.statusPin)
-	fmt.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
+    log.Info.Printf("relayPin: %v \n", options.relayPin)
+    log.Info.Printf("StatusPin: %v \n", options.statusPin)
+    log.Info.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
 
 	acc := NewGarageDoorOpener(info)
+
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
+
 
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
 	if err != nil {
-		log.Fatal(err)
+		log.Info.Fatal(err)
 	}
 
 	go pollDoorStatus(acc, options.statusPin)
