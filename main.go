@@ -113,8 +113,6 @@ func main() {
     log.Info.Printf("relayPin: %v \n", options.relayPin)
     log.Info.Printf("StatusPin: %v \n", options.statusPin)
     log.Info.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
-    log.Info.Fatalln("This is a fatal error")
-    log.Info.Panicln("a string of panicking")
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
