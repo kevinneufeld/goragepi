@@ -37,7 +37,7 @@ func toggleDoor(o Options) func(int) {
 		}
 
 		if currentDoorState, err := door.CheckDoorStatus(o.statusPin); err != nil {
-			fmt.Printf("ERROR: Could not read status pin %v\n", err)
+            log.Info.Panicf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			if currentDoorState != nextState {
 				door.ToggleSwitch(o.relayPin, o.sleepTimeout)
@@ -49,7 +49,7 @@ func toggleDoor(o Options) func(int) {
 func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 	for {
 		if status, err := door.CheckDoorStatus(pin); err != nil {
-			fmt.Printf("ERROR: Could not read status pin %v\n", err)
+            log.Info.Panicf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			switch status {
 			case "open":
@@ -57,8 +57,7 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 			case "closed":
 				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
 			}
-			fmt.Printf("AccessoryCurrentState: %v\n", acc.GarageDoorOpener.CurrentDoorState.GetValue())
-			fmt.Printf("GPIODoorState: %s\n", status)
+            log.Debug.Printf("GPIO Pin: %v; PinDoorStatus: %s; AccessoryCurrentState: %\n", pin, status, acc.GarageDoorOpener.CurrentDoorState.GetValue())
 		}
 		
 		time.Sleep(time.Second)
@@ -73,7 +72,7 @@ func main() {
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
 	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 21, "GPIO pin of reed switch")
+	flag.IntVar(&options.statusPin, "status-pin", 5, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
@@ -111,7 +110,7 @@ func main() {
 
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
 	if err != nil {
-		log.Info.Fatal(err)
+        log.Info.Panic(err)
 	}
 
 	go pollDoorStatus(acc, options.statusPin)
