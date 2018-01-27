@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	hc "github.com/brutella/hc"
+	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
 	"github.com/brutella/hc/characteristic"
 	"github.com/brutella/hc/log"
@@ -29,6 +29,7 @@ var options Options
 
 var serialNumber string = os.Getenv("RESIN_DEVICE_UUID")
 
+
 func toggleDoor(o Options) func(int) {
 	return func(targetState int) {
 		nextState := "closed"
@@ -37,7 +38,7 @@ func toggleDoor(o Options) func(int) {
 		}
 
 		if currentDoorState, err := door.CheckDoorStatus(o.statusPin); err != nil {
-            log.Info.Panicf("ERROR: Could not read status pin %v\n", err)
+            fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			if currentDoorState != nextState {
 				door.ToggleSwitch(o.relayPin, o.sleepTimeout)
@@ -47,9 +48,10 @@ func toggleDoor(o Options) func(int) {
 }
 
 func pollDoorStatus(acc *GarageDoorOpener, pin int) {
+    lastKnownState := ""
 	for {
 		if status, err := door.CheckDoorStatus(pin); err != nil {
-            log.Info.Panicf("ERROR: Could not read status pin %v\n", err)
+            fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			switch status {
 			case "open":
@@ -57,9 +59,18 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 			case "closed":
 				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
 			}
-            log.Debug.Printf("GPIO Pin: %v; PinDoorStatus: %s; AccessoryCurrentState: %\n", pin, status, acc.GarageDoorOpener.CurrentDoorState.GetValue())
-		}
-		
+
+            if lastKnownState != status {
+                if lastKnownState == "" {
+                    log.Info.Printf("pollDoorStatusChange Initial State: %s", status)
+                }else {
+                    log.Info.Printf("pollDoorStatusChange From: %s To: %s", lastKnownState, status)
+                }
+
+                lastKnownState = status
+            }
+        }
+
 		time.Sleep(time.Second)
 	}
 }
@@ -72,7 +83,7 @@ func main() {
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
 	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 5, "GPIO pin of reed switch")
+	flag.IntVar(&options.statusPin, "status-pin", 4, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
