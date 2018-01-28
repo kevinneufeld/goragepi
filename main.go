@@ -54,20 +54,18 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
 		if status, err := door.CheckDoorStatus(pin); err != nil {
             fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
-			switch status {
-			case "open":
-				//acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
-				acc.GarageDoorOpener.CurrentDoorState.UpdateValue(characteristic.CurrentDoorStateOpen)
+		    switch status {
 			case "closed":
-				//acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
-                acc.GarageDoorOpener.CurrentDoorState.UpdateValue(characteristic.CurrentDoorStateClosed)
-			}
-
+				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
+            default:
+                acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
+            }
+            
             if lastKnownState != status {
-                if lastKnownState == "" {
-                    log.Info.Printf("InitSenorState: %s", status)
-                }else {
+                if lastKnownState != "" {
                     log.Info.Printf("DoorSensor: %s -> %s", lastKnownState, status)
+                }else {
+                    log.Info.Printf("InitSenorState: %s", status)
                 }
 
                 lastKnownState = status
@@ -119,6 +117,7 @@ func main() {
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
+
 
 
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
