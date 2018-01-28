@@ -29,7 +29,6 @@ var options Options
 
 var serialNumber string = os.Getenv("RESIN_DEVICE_UUID")
 
-
 func toggleDoor(o Options) func(int) {
 	return func(targetState int) {
 		nextState := "closed"
@@ -47,6 +46,7 @@ func toggleDoor(o Options) func(int) {
 		}
 	}
 }
+
 
 func pollDoorStatus(acc *GarageDoorOpener, pin int) {
     lastKnownState := ""
@@ -66,9 +66,10 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
                     log.Info.Printf("DoorSensor: %s -> %s", lastKnownState, status)
                 }else {
                     log.Info.Printf("InitSenorState: %s", status)
+                    acc.GarageDoorOpener.TargetDoorState.SetValue(characteristic.CurrentDoorStateClosed)
                 }
-                log.Info.Printf("TargetState: ", acc.GarageDoorOpener.TargetDoorState.GetValue())
-                log.Info.Printf("CurrentState: ", acc.GarageDoorOpener.CurrentDoorState.GetValue())
+                log.Info.Printf("TargetState: %v", acc.GarageDoorOpener.TargetDoorState.GetValue())
+                log.Info.Printf("CurrentState: %v", acc.GarageDoorOpener.CurrentDoorState.GetValue())
 
                 lastKnownState = status
             }
