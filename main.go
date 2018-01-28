@@ -67,6 +67,8 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
                 }else {
                     log.Info.Printf("InitSenorState: %s", status)
                 }
+                log.Info.Printf("TargetState: ", acc.GarageDoorOpener.TargetDoorState.GetValue())
+                log.Info.Printf("CurrentState: ", acc.GarageDoorOpener.CurrentDoorState.GetValue())
 
                 lastKnownState = status
             }
@@ -117,8 +119,6 @@ func main() {
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
-
-
 
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
 	if err != nil {
