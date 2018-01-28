@@ -46,13 +46,14 @@ func toggleDoor(o Options) func(int) {
 		}
 	}
 }
-// Update the iOS with the correct target state.
-func toggleTargetDoorState(door *GarageDoorOpener){
-    targetState := door.GarageDoorOpener.TargetDoorState.GetValue()
-    currentState := door.GarageDoorOpener.CurrentDoorState.GetValue()
+// Update iOS with the correct target state.
+func syncAccTargetDoorState(acc *GarageDoorOpener){
+    targetState := acc.GarageDoorOpener.TargetDoorState.GetValue()
+    currentState := acc.GarageDoorOpener.CurrentDoorState.GetValue()
 
     if targetState != currentState {
-        door.GarageDoorOpener.TargetDoorState.SetValue(currentState)
+        time.Sleep(5 * time.Second)
+        acc.GarageDoorOpener.TargetDoorState.SetValue(currentState)
     }
 }
 
@@ -76,7 +77,7 @@ func pollDoorStatus(acc *GarageDoorOpener, pin int) {
                     log.Info.Printf("InitSenorState: %s", currentDoorState)
                 }
                 lastKnownDoorState = currentDoorState
-                toggleTargetDoorState(acc)
+                syncAccTargetDoorState(acc)
             }
         }
 
