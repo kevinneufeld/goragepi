@@ -5,7 +5,7 @@ import (
 	"github.com/stianeikeland/go-rpio"
 )
 
-func CheckDoorStatus(pinNumber int) (state string, err error) {
+func CheckDoorSensor(pinNumber int) (state string, err error) {
 	err = rpio.Open()
 	if err != nil {
 		return

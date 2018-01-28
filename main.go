@@ -36,7 +36,7 @@ func toggleDoor(o Options) func(int) {
 			nextState = "open"
 		}
 
-		if currentDoorState, err := door.CheckDoorStatus(o.statusPin); err != nil {
+		if currentDoorState, err := door.CheckDoorSensor(o.statusPin); err != nil {
             fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			if currentDoorState != nextState {
@@ -46,32 +46,37 @@ func toggleDoor(o Options) func(int) {
 		}
 	}
 }
+// Update the iOS with the correct target state.
+func toggleTargetDoorState(door *GarageDoorOpener){
+    targetState := door.GarageDoorOpener.TargetDoorState.GetValue()
+    currentState := door.GarageDoorOpener.CurrentDoorState.GetValue()
 
+    if targetState != currentState {
+        door.GarageDoorOpener.TargetDoorState.SetValue(currentState)
+    }
+}
 
 func pollDoorStatus(acc *GarageDoorOpener, pin int) {
-    lastKnownState := ""
+    lastKnownDoorState := ""
 	for {
-		if status, err := door.CheckDoorStatus(pin); err != nil {
-            fmt.Printf("ERROR: Could not read status pin %v\n", err)
+		if currentDoorState, err := door.CheckDoorSensor(pin); err != nil {
+            fmt.Printf("ERROR: Could not read currentDoorState pin %v\n", err)
 		} else {
-		    switch status {
+		    switch currentDoorState {
 			case "closed":
 				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
             default:
                 acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
             }
             
-            if lastKnownState != status {
-                if lastKnownState != "" {
-                    log.Info.Printf("DoorSensor: %s -> %s", lastKnownState, status)
+            if lastKnownDoorState != currentDoorState {
+                if lastKnownDoorState != "" {
+                    log.Info.Printf("DoorSensor: %s -> %s", lastKnownDoorState, currentDoorState)
                 }else {
-                    log.Info.Printf("InitSenorState: %s", status)
-                    acc.GarageDoorOpener.TargetDoorState.SetValue(characteristic.CurrentDoorStateClosed)
+                    log.Info.Printf("InitSenorState: %s", currentDoorState)
                 }
-                log.Info.Printf("TargetState: %v", acc.GarageDoorOpener.TargetDoorState.GetValue())
-                log.Info.Printf("CurrentState: %v", acc.GarageDoorOpener.CurrentDoorState.GetValue())
-
-                lastKnownState = status
+                lastKnownDoorState = currentDoorState
+                toggleTargetDoorState(acc)
             }
         }
 
@@ -120,6 +125,8 @@ func main() {
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
+
+
 
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
 	if err != nil {
