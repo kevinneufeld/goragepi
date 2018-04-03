@@ -37,49 +37,50 @@ func toggleDoor(o Options) func(int) {
 		}
 
 		if currentDoorState, err := door.CheckDoorSensor(o.statusPin); err != nil {
-            fmt.Printf("ERROR: Could not read status pin %v\n", err)
+			fmt.Printf("ERROR: Could not read status pin %v\n", err)
 		} else {
 			if currentDoorState != nextState {
-			    log.Info.Println("Toggling Relay Switch")
+				log.Info.Println("Toggling Relay Switch")
 				door.ToggleSwitch(o.relayPin, o.sleepTimeout)
 			}
 		}
 	}
 }
-// Update iOS with the correct target state.
-func syncAccTargetDoorState(acc *GarageDoorOpener){
-    targetState := acc.GarageDoorOpener.TargetDoorState.GetValue()
-    currentState := acc.GarageDoorOpener.CurrentDoorState.GetValue()
 
-    if targetState != currentState {
-        time.Sleep(5 * time.Second)
-        acc.GarageDoorOpener.TargetDoorState.SetValue(currentState)
-    }
+// Update iOS with the correct target state.
+func syncAccTargetDoorState(acc *GarageDoorOpener) {
+	targetState := acc.GarageDoorOpener.TargetDoorState.GetValue()
+	currentState := acc.GarageDoorOpener.CurrentDoorState.GetValue()
+
+	if targetState != currentState {
+		time.Sleep(5 * time.Second)
+		acc.GarageDoorOpener.TargetDoorState.SetValue(currentState)
+	}
 }
 
 func pollDoorStatus(acc *GarageDoorOpener, pin int) {
-    lastKnownDoorState := ""
+	lastKnownDoorState := ""
 	for {
 		if currentDoorState, err := door.CheckDoorSensor(pin); err != nil {
-            fmt.Printf("ERROR: Could not read currentDoorState pin %v\n", err)
+			fmt.Printf("ERROR: Could not read currentDoorState pin %v\n", err)
 		} else {
-		    switch currentDoorState {
+			switch currentDoorState {
 			case "closed":
 				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateClosed)
-            default:
-                acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
-            }
-            
-            if lastKnownDoorState != currentDoorState {
-                if lastKnownDoorState != "" {
-                    log.Info.Printf("DoorSensor: %s -> %s", lastKnownDoorState, currentDoorState)
-                }else {
-                    log.Info.Printf("InitSenorState: %s", currentDoorState)
-                }
-                lastKnownDoorState = currentDoorState
-                syncAccTargetDoorState(acc)
-            }
-        }
+			default:
+				acc.GarageDoorOpener.CurrentDoorState.SetValue(characteristic.CurrentDoorStateOpen)
+			}
+
+			if lastKnownDoorState != currentDoorState {
+				if lastKnownDoorState != "" {
+					log.Info.Printf("DoorSensor: %s -> %s", lastKnownDoorState, currentDoorState)
+				} else {
+					log.Info.Printf("InitSenorState: %s", currentDoorState)
+				}
+				lastKnownDoorState = currentDoorState
+				syncAccTargetDoorState(acc)
+			}
+		}
 
 		time.Sleep(time.Second)
 	}
@@ -93,7 +94,7 @@ func main() {
 
 	flag.StringVar(&options.pin, "pin", "", "8-digit Pin for securing garage door")
 	flag.IntVar(&options.relayPin, "relay-pin", 17, "GPIO pin of relay")
-	flag.IntVar(&options.statusPin, "status-pin", 5, "GPIO pin of reed switch")
+	flag.IntVar(&options.statusPin, "status-pin", 4, "GPIO pin of reed switch")
 	flag.IntVar(&options.sleepTimeout, "sleep", 500, "Time in milliseconds to keep switch closed")
 	flag.BoolVar(&options.version, "version", false, "print version and exit")
 	flag.Parse()
@@ -120,18 +121,16 @@ func main() {
 		SerialNumber: serialNumber,
 	}
 
-    log.Info.Printf("relayPin: %v \n", options.relayPin)
-    log.Info.Printf("StatusPin: %v \n", options.statusPin)
-    log.Info.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
+	log.Info.Printf("relayPin: %v \n", options.relayPin)
+	log.Info.Printf("StatusPin: %v \n", options.statusPin)
+	log.Info.Printf("StatusSleepInterval: %v \n", options.sleepTimeout)
 	acc := NewGarageDoorOpener(info)
 
 	acc.GarageDoorOpener.TargetDoorState.OnValueRemoteUpdate(toggleDoor(options))
 
-
-
 	t, err := hc.NewIPTransport(hc.Config{Pin: options.pin}, acc.Accessory)
 	if err != nil {
-        log.Info.Panic(err)
+		log.Info.Panic(err)
 	}
 
 	go pollDoorStatus(acc, options.statusPin)
